@@ -1,0 +1,94 @@
+---
+title: "Messy_data_exploration"
+format: pdf
+editor: visual
+---
+
+```{r}
+rm(list=ls()) 
+library(tidyverse)
+anscombe_quartet = readRDS("anscombe quartet.rds")
+```
+
+### Task 1
+
+Summarise the data demographic
+
+```{r}
+str(anscombe_quartet)
+```
+
+```{r}
+anscombe_quartet %>% 
+  group_by(dataset) %>% 
+  summarise(
+    mean_x    = mean(x),
+    mean_y    = mean(y),
+    min_x     = min(x),
+    min_y     = min(y),
+    max_x     = max(x),
+    max_y     = max(y),
+    crrltn    = cor(x, y)
+  )
+```
+
+The four data sets have the similar correlation coefficient, but have diferrent min and max.
+
+Now I want to plot the data:
+
+```{r}
+library(ggplot2)
+T1 <- ggplot(anscombe_quartet, aes(x=x,y=y)) +
+  geom_point() + 
+  geom_smooth(method = "lm",formula = "y ~ x") +
+  facet_wrap(~dataset)
+ggsave("T1_plot.png", plot = T1, width = 5, height = 5, dpi = 300)
+
+```
+
+The output image is saved as T1_plot and inserted below
+
+![](T1_plot.png)
+
+Although they have similar regression coefficient, they are very different datasets. The first data set is more linear regression. The second is like a projection. Third one has an outlier. Fourth one has an outlier around 20 and the rest is around 6. Only the first dataset, or the third dataset excluding the outlier can be modeled appropriately with regression. Hence the summary table might be misleading.
+
+### Task 2
+
+now I want to load in the second dataset
+
+```{r}
+datasaurus_dozen = readRDS("datasaurus_dozen.rds")
+
+```
+
+I want to explore the different dataset.
+
+```{r}
+result <- datasaurus_dozen %>% 
+  group_by(dataset) %>% 
+  summarise(
+    mean_x    = mean(x),
+    mean_y    = mean(y),
+    min_x     = min(x),
+    min_y     = min(y),
+    max_x     = max(x),
+    max_y     = max(y),
+    crrltn    = cor(x, y)
+  )
+
+knitr::kable(result, digits = 2, caption = "T2 Summary Statistics")
+
+```
+
+The correlation is very similar, as shown in the table
+
+```{r}
+ T2 <- ggplot(datasaurus_dozen, aes(x=x,y=y)) +
+  geom_point() + 
+  geom_smooth(method = "lm",formula = "y ~ x") +
+  facet_wrap(~dataset)
+ ggsave("T2_plot.png", plot = T2, width = 5, height = 5, dpi = 300)
+
+```
+
+![](T2_plot.png){width="5in"}
